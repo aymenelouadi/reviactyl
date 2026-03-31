@@ -26,6 +26,8 @@ Route::prefix('/account')->middleware(AccountSubject::class)->group(function () 
         Route::get('/two-factor', [Client\TwoFactorController::class, 'index']);
         Route::post('/two-factor', [Client\TwoFactorController::class, 'store']);
         Route::post('/two-factor/disable', [Client\TwoFactorController::class, 'delete']);
+        Route::post('/email-otp', [Client\EmailOtpController::class, 'store']);
+        Route::post('/email-otp/disable', [Client\EmailOtpController::class, 'delete']);
     });
 
     Route::put('/email', [Client\AccountController::class, 'updateEmail'])->name('api:client.account.update-email');

@@ -60,6 +60,11 @@ const LoginContainer = ({ history }: RouteComponentProps) => {
                     return;
                 }
 
+                if (response.emailOtp) {
+                    history.replace('/auth/login/email-otp-checkpoint', { token: response.confirmationToken });
+                    return;
+                }
+
                 history.replace('/auth/login/checkpoint', { token: response.confirmationToken });
             })
             .catch((error) => {

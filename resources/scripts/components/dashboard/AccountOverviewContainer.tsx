@@ -3,6 +3,7 @@ import { useState } from 'react';
 import UpdatePasswordForm from '@/components/dashboard/forms/UpdatePasswordForm';
 import UpdateEmailAddressForm from '@/components/dashboard/forms/UpdateEmailAddressForm';
 import ConfigureTwoFactorForm from '@/components/dashboard/forms/ConfigureTwoFactorForm';
+import ConfigureEmailOtpForm from '@/components/dashboard/forms/ConfigureEmailOtpForm';
 import tw from 'twin.macro';
 import { breakpoint } from '@/theme';
 import styled from 'styled-components/macro';
@@ -113,6 +114,9 @@ export default () => {
                     </TitledGreyBox>
                     <TitledGreyBox title={t('overview.2fa-verification')}>
                         <ConfigureTwoFactorForm />
+                    </TitledGreyBox>
+                    <TitledGreyBox title={'Email OTP Verification'} showFlashes={'account:email-otp'}>
+                        <ConfigureEmailOtpForm />
                     </TitledGreyBox>
                 </div>
             </Container>

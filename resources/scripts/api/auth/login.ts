@@ -4,6 +4,7 @@ export interface LoginResponse {
     complete: boolean;
     intended?: string;
     confirmationToken?: string;
+    emailOtp?: boolean;
 }
 
 export interface LoginData {
@@ -38,6 +39,7 @@ export default ({ username, password, captchaToken, captchaProvider }: LoginData
                     complete: response.data.data.complete,
                     intended: response.data.data.intended || undefined,
                     confirmationToken: response.data.data.confirmation_token || undefined,
+                    emailOtp: response.data.data.email_otp || false,
                 });
             })
             .catch(reject);

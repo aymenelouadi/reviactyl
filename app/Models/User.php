@@ -132,6 +132,7 @@ class User extends Model implements
         'use_totp',
         'totp_secret',
         'totp_authenticated_at',
+        'use_email_otp',
         'gravatar',
         'root_admin',
     ];
@@ -142,6 +143,7 @@ class User extends Model implements
     protected $casts = [
         'root_admin' => 'boolean',
         'use_totp' => 'boolean',
+        'use_email_otp' => 'boolean',
         'gravatar' => 'boolean',
         'totp_authenticated_at' => 'datetime',
     ];
@@ -160,6 +162,7 @@ class User extends Model implements
         'language' => 'en',
         'use_totp' => false,
         'totp_secret' => null,
+        'use_email_otp' => false,
     ];
 
     /**
@@ -177,6 +180,7 @@ class User extends Model implements
         'language' => 'string',
         'use_totp' => 'boolean',
         'totp_secret' => 'nullable|string',
+        'use_email_otp' => 'boolean',
     ];
 
     /**

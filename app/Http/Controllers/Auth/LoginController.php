@@ -9,10 +9,16 @@ use Pterodactyl\Models\User;
 use Illuminate\Http\JsonResponse;
 use Pterodactyl\Facades\Activity;
 use Illuminate\Contracts\View\View;
+use Pterodactyl\Services\Auth\EmailOtpService;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
 
 class LoginController extends AbstractLoginController
 {
+    public function __construct(private EmailOtpService $emailOtpService)
+    {
+        parent::__construct();
+    }
+
     /**
      * Handle all incoming requests for the authentication routes and render the
      * base authentication view component. React will take over at this point and
@@ -53,23 +59,48 @@ class LoginController extends AbstractLoginController
             $this->sendFailedLoginResponse($request, $user);
         }
 
-        if (!$user->use_totp) {
-            return $this->sendLoginResponse($user, $request);
+        // TOTP takes priority over Email OTP. Check TOTP first.
+        if ($user->use_totp) {
+            Activity::event('auth:checkpoint')->withRequestMetadata()->subject($user)->log();
+
+            $request->session()->put('auth_confirmation_token', [
+                'user_id'     => $user->id,
+                'token_value' => $token = Str::random(64),
+                'expires_at'  => CarbonImmutable::now()->addMinutes(5),
+                'type'        => 'totp',
+            ]);
+
+            return new JsonResponse([
+                'data' => [
+                    'complete'           => false,
+                    'confirmation_token' => $token,
+                ],
+            ]);
         }
 
-        Activity::event('auth:checkpoint')->withRequestMetadata()->subject($user)->log();
+        // If the user has email OTP enabled, generate and send a code.
+        if ($user->use_email_otp) {
+            Activity::event('auth:checkpoint')->withRequestMetadata()->subject($user)->log();
 
-        $request->session()->put('auth_confirmation_token', [
-            'user_id' => $user->id,
-            'token_value' => $token = Str::random(64),
-            'expires_at' => CarbonImmutable::now()->addMinutes(5),
-        ]);
+            $code = $this->emailOtpService->generate($user);
+            $user->notify(new \Pterodactyl\Notifications\SendEmailOtp($code));
 
-        return new JsonResponse([
-            'data' => [
-                'complete' => false,
-                'confirmation_token' => $token,
-            ],
-        ]);
+            $request->session()->put('auth_confirmation_token', [
+                'user_id'     => $user->id,
+                'token_value' => $token = Str::random(64),
+                'expires_at'  => CarbonImmutable::now()->addMinutes(10),
+                'type'        => 'email_otp',
+            ]);
+
+            return new JsonResponse([
+                'data' => [
+                    'complete'              => false,
+                    'confirmation_token'    => $token,
+                    'email_otp'             => true,
+                ],
+            ]);
+        }
+
+        return $this->sendLoginResponse($user, $request);
     }
 }
