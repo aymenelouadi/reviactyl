@@ -13,8 +13,8 @@ return new class extends Migration
         });
 
         Schema::create('email_otp_tokens', function (Blueprint $table) {
-            $table->id();
-            $table->unsignedBigInteger('user_id');
+            $table->increments('id');
+            $table->unsignedInteger('user_id');
             $table->string('token_hash');
             $table->timestamp('expires_at');
             $table->timestamps();
