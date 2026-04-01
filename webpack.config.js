@@ -13,7 +13,7 @@ module.exports = {
     performance: {
         hints: false,
     },
-    entry: ['react-hot-loader/patch', './resources/scripts/index.tsx'],
+    entry: isProduction ? ['./resources/scripts/index.tsx'] : ['react-hot-loader/patch', './resources/scripts/index.tsx'],
     output: {
         path: path.join(__dirname, '/public/assets'),
         filename: isProduction ? 'bundle.[chunkhash:8].js' : 'bundle.[fullhash:8].js',
@@ -119,6 +119,9 @@ module.exports = {
             '@feature': path.join(__dirname, '/resources/scripts/components/server/features'),
         },
         symlinks: false,
+        alias: isProduction ? {
+            'react-hot-loader/root': path.join(__dirname, 'resources/scripts/noop-hot-loader.ts'),
+        } : {},
     },
     externals: {
         // Mark moment as an external to exclude it from the Chart.js build since we don't need to use
