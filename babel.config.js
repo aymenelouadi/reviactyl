@@ -1,9 +1,10 @@
 module.exports = function (api) {
     let targets = {};
+    const isProduction = api.env('production') || process.env.NODE_ENV === 'production';
     const plugins = [
         'babel-plugin-macros',
         'styled-components',
-        'react-hot-loader/babel',
+        ...(!isProduction ? ['react-hot-loader/babel'] : []),
         '@babel/transform-runtime',
         '@babel/transform-react-jsx',
         '@babel/proposal-class-properties',
