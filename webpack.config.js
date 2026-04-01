@@ -117,11 +117,11 @@ module.exports = {
             '@': path.join(__dirname, '/resources/scripts'),
             '@definitions': path.join(__dirname, '/resources/scripts/api/definitions'),
             '@feature': path.join(__dirname, '/resources/scripts/components/server/features'),
+            ...(isProduction ? {
+                'react-hot-loader/root': path.join(__dirname, 'resources/scripts/noop-hot-loader.ts'),
+            } : {}),
         },
         symlinks: false,
-        alias: isProduction ? {
-            'react-hot-loader/root': path.join(__dirname, 'resources/scripts/noop-hot-loader.ts'),
-        } : {},
     },
     externals: {
         // Mark moment as an external to exclude it from the Chart.js build since we don't need to use
